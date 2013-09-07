@@ -82,6 +82,9 @@ void solve_pack_sort(int C, int I, int* p)
         std::fprintf(stderr, "ERROR...\n");
     }
 
+    std::fprintf(stderr, "p[opt_l_idx] = %d\n", p[opt_l_idx]);
+    std::fprintf(stderr, "p[opt_h_idx] = %d\n", p[opt_h_idx]);
+    std::fprintf(stderr, "res = %d\n", C - (p[opt_l_idx] + p[opt_h_idx]));
     opt_l_idx = p_idx[opt_l_idx].second;
     opt_h_idx = p_idx[opt_h_idx].second;
     if (opt_l_idx > opt_h_idx)

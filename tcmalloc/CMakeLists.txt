@@ -447,4 +447,7 @@ set(VERSION "2.1")
 # define __STDC_FORMAT_MACROS 1
 #endif
 
-
+configure_file (
+  "${PROJECT_SOURCE_DIR}/src/base/seasolver_config.h.in"
+  "${PROJECT_BINARY_DIR}/seasolver_config.h"
+  )

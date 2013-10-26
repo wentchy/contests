@@ -1,10 +1,11 @@
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
+#include <stack>
 
 const int dp_size = 100;
 
-//int dp[dp_size + 1][dp_size + 1];
+char op[dp_size + 1][dp_size + 1];
 int dp1[dp_size + 1];
 int dp2[dp_size + 1];
 
@@ -20,13 +21,24 @@ int edit_dist(const char* src, const char* dst)
         for (int j = 1; j < dstlen + 1; ++j)
         {
             int dist = last_dp[j - 1];
+            char oper = 'M';
             if (src[i - 1] != dst[j - 1])
             {
                 dist += 2;
+                oper = 'S';
             }
-            dist = std::min(dist, last_dp[j] + 1);
-            dist = std::min(dist, current_dp[j - 1] + 1);
+            if (dist > last_dp[j] + 1)
+            {
+                dist = last_dp[j] + 1;
+                oper = 'D';
+            }
+            if (dist > current_dp[j - 1] + 1)
+            {
+                dist = current_dp[j - 1] + 1;
+                oper = 'I';
+            }
             current_dp[j] = dist;
+            op[i][j] = oper;
         }
         std::swap(last_dp, current_dp);
     }
@@ -41,7 +53,96 @@ void init_dp()
     {
         dp1[i] = i;
     }
+    std::memset(op, 0, sizeof(op));
+    for (int i = 0; i < dp_size + 1; ++i)
+    {
+        op[i][0] = 'D';
+        op[0][i] = 'I';
+    }
+    op[0][0] = '\0';
+}
 
+struct PathOp
+{
+    int i;
+    int j;
+    char oper;
+    PathOp(int ii, int jj, char o)
+    {
+        i = ii;
+        j = jj;
+        oper = o;
+    }
+};
+
+void reconstruct_path(const char* src, const char* dst)
+{
+    int srclen = std::strlen(src);
+    int dstlen = std::strlen(dst);
+
+    std::stack<PathOp> opstack;
+    int i = srclen;
+    int j = dstlen;
+    bool end_flag = false;
+    while ((i != 0 || j != 0) && (!end_flag))
+    {
+        PathOp opinfo(i, j, op[i][j]);
+        opstack.push(opinfo);
+        switch (opinfo.oper)
+        {
+            case 'M':
+            case 'S':
+            {
+                --i; --j;
+            }
+            break;
+            case 'I':
+            {
+                -- j;
+            }
+            break;
+            case 'D':
+            {
+                -- i;
+            }
+            default:
+            {
+                //end_flag = true;
+            }
+        }
+        if (i < 0 || j < 0)
+        {
+            std::printf("Err2\n");
+            std::exit(-1);
+        }
+    }
+
+    while (!opstack.empty())
+    {
+        const PathOp& opinfo = opstack.top();
+        switch (opinfo.oper)
+        {
+            case 'S':
+            {
+                std::printf("%c --> %c @ (%d, %d) \n", src[opinfo.i - 1], dst[opinfo.j - 1], opinfo.i, opinfo.j);
+            }
+            break;
+            case 'I':
+            {
+                std::printf("+ %c @ %d\n", dst[opinfo.j - 1], opinfo.j);
+            }
+            break;
+            case 'D':
+            {
+                std::printf("- %c @ %d\n", src[opinfo.i - 1], opinfo.i);
+            }
+            break;
+            default:
+            {
+            }
+        }
+        opstack.pop();
+    }
 }
 
 int main(int argc, char* argv[])
@@ -53,6 +154,7 @@ int main(int argc, char* argv[])
 
     init_dp();
     std::printf("%d\n", edit_dist(src, dst));
+    reconstruct_path(src, dst);
     return 0;
 }
 

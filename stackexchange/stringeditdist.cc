@@ -104,6 +104,7 @@ void reconstruct_path(const char* src, const char* dst)
             {
                 -- i;
             }
+            break;
             default:
             {
             }

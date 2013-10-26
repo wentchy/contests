@@ -332,29 +332,14 @@ check_cxx_source_compiles("#include <stdint.h>
 
 #undef LT_OBJDIR
 
-#undef MALLOC_HOOK_MAYBE_VOLATILE TODO: change name ``volatile''
-#define MALLOC_HOOK_MAYBE_VOLATILE volatile
+#define IS_MALLOC_HOOK_MAYBE_VOLATILE volatile
 check_cxx_source_compiles("#include <malloc.h>
 void* (* volatile __malloc_hook)(size_t, const void*) = 0;
-int main () { ; return 0; }" MALLOC_HOOK_MAYBE_VOLATILE)
+int main () { ; return 0; }" IS_MALLOC_HOOK_MAYBE_VOLATILE)
+if (IS_MALLOC_HOOK_MAYBE_VOLATILE)
+    set(MALLOC_HOOK_MAYBE_VOLATILE "volatile")
+endif (IS_MALLOC_HOOK_MAYBE_VOLATILE)
 
-#undef NO_MINUS_C_MINUS_O
-
-#undef PACKAGE
-
-#undef PACKAGE_BUGREPORT
-
-#undef PACKAGE_NAME
-
-#undef PACKAGE_STRING
-
-#undef PACKAGE_TARNAME
-
-#undef PACKAGE_URL
-
-#undef PACKAGE_VERSION
-
-#undef PC_FROM_UCONTEXT
 set(PC_FIELDS "")
 list(APPEND PC_FIELDS "uc_mcontext.gregs[REG_PC]") # Solaris x86 (32 + 64 bit)
 list(APPEND PC_FIELDS "uc_mcontext.gregs[REG_EIP]") # Linux (i386)
@@ -423,7 +408,17 @@ endif (IS_LONG_LONG_EQUAL_SIZE_T)
 #define PTHREADS_CRASHES_IF_RUN_TOO_EARLY 1
 #endif
 
-#undef PTHREAD_CREATE_JOINABLE
+check_cxx_source_runs("#include <pthread.h>
+int main () { int attr=PTHREAD_CREATE_JOINABLE; return attr; ; return 0; }" IS_PTHREAD_CREATE_JOINABLE)
+check_cxx_source_runs("#include <pthread.h>
+int main () { int attr=PTHREAD_CREATE_UNDETACHED; return attr; ; return 0; }" IS_PTHREAD_CREATE_UNDETACHED)
+
+if (IS_PTHREAD_CREATE_JOINABLE)
+    set(PTHREAD_CREATE_JOINABLE "PTHREAD_CREATE_JOINABLE")
+endif (IS_PTHREAD_CREATE_JOINABLE)
+if (IS_PTHREAD_CREATE_UNDETACHED)
+    set(PTHREAD_CREATE_JOINABLE "PTHREAD_CREATE_UNDETACHED")
+endif (IS_PTHREAD_CREATE_UNDETACHED)
 
 check_cxx_source_runs("#include <ctype.h>
 #include <stdlib.h>
@@ -448,6 +443,6 @@ set(VERSION "2.1")
 #endif
 
 configure_file (
-  "${PROJECT_SOURCE_DIR}/src/base/seasolver_config.h.in"
-  "${PROJECT_BINARY_DIR}/seasolver_config.h"
+  "${PROJECT_SOURCE_DIR}/src/config.h.in"
+  "${PROJECT_BINARY_DIR}/config.h"
   )

@@ -8,11 +8,13 @@ const int dp_size = 100;
 char op[dp_size + 1][dp_size + 1];
 int dp1[dp_size + 1];
 int dp2[dp_size + 1];
+int dp3[dp_size + 1];
 
 int edit_dist(const char* src, const char* dst)
 {
     int srclen = std::strlen(src);
     int dstlen = std::strlen(dst);
+    int* last_last_dp = dp3;
     int* last_dp = dp1;
     int* current_dp = dp2;
     for (int i = 1; i < srclen + 1; ++i)
@@ -24,8 +26,16 @@ int edit_dist(const char* src, const char* dst)
             char oper = 'M';
             if (src[i - 1] != dst[j - 1])
             {
-                dist += 2;
-                oper = 'S';
+                if (i >= 2 && j >=2 && (src[i - 2] == dst[j - 1] && src[i - 1] == dst[j - 2]))
+                {
+                    dist = last_last_dp[j - 2] + 1;
+                    oper = 'W';
+                }
+                else
+                {
+                    dist += 2;
+                    oper = 'S';
+                }
             }
             if (last_dp[j] + 1 < dist)
             {
@@ -40,7 +50,10 @@ int edit_dist(const char* src, const char* dst)
             current_dp[j] = dist;
             op[i][j] = oper;
         }
-        std::swap(last_dp, current_dp);
+        int* tmp = last_last_dp;
+        last_last_dp = last_dp;
+        last_dp = current_dp;
+        current_dp = tmp;
     }
     return last_dp[dstlen];
 }
@@ -104,6 +117,11 @@ void reconstruct_path(const char* src, const char* dst)
             {
                 -- i;
             }
+            break;
+            case 'W':
+            {
+                i -= 2; j -= 2;
+            }
             default:
             {
             }
@@ -135,6 +153,10 @@ void reconstruct_path(const char* src, const char* dst)
                 std::printf("- %c @ (%d, %d)\n", src[opinfo.i - 1], opinfo.i, opinfo.j);
             }
             break;
+            case 'W':
+            {
+                std::printf("%c <--> %c @ (%d, %d) \n", src[opinfo.i - 1], dst[opinfo.j - 1], opinfo.i, opinfo.j);
+            }
             default:
             {
             }

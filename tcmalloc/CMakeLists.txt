@@ -29,26 +29,6 @@ if (APPLE)
     set(CMAKE_FIND_LIBRARY_SUFFIXES .dylib ${CMAKE_FIND_LIBRARY_SUFFIXES})
 endif (APPLE)
 
-
-#check_include_file(stdlib.h SEASOLVER_HAVE_STDLIB_H)
-check_cxx_source_compiles("
- #include <cstdlib>
- int main(int argc, char* argv[]) {return 0;} " SEASOLVER_HAVE_STDLIB_H)
-check_cxx_source_compiles("
- #include <csignal>
- int main(int argc, char* argv[]) {return 0;} " SEASOLVER_HAVE_CSIGNAL)
-check_cxx_source_compiles("
- #include <sstream>
- int main(int argc, char* argv[]) {return 0;} " SEASOLVER_HAVE_SSTREAM)
-check_cxx_source_compiles("
- #include <cxxabi.h>
- int main(int argc, char* argv[]) {char *foo= 0; int bar= 0; foo= abi::__cxa_demangle(foo, foo, 0, &bar); return 0; }"
- SEASOLVER_HAVE_ABI_CXA_DEMANGLE)
-check_cxx_source_compiles("
- #include <execinfo.h>
- int main(int argc, char* argv[]){ void *addresses[10]; char **strings; int size = backtrace(addresses, 10);
- strings = backtrace_symbols(addresses, size);} "
- SEASOLVER_HAVE_LIBC_BACKTRACE)
 check_cxx_source_compiles("int main () { return __builtin_expect(main != 0, 1) ; return 0; }" HAVE_BUILTIN_EXPECT)
 check_cxx_source_compiles("int main () { void *sp = __builtin_stack_pointer() ; return 0; }" HAVE_BUILTIN_STACK_POINTER)
 check_cxx_source_compiles("

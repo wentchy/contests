@@ -145,6 +145,7 @@ void reconstruct_path(const char* src, const char* dst)
 
 int main(int argc, char* argv[])
 {
+    // swap prior
     char src[dp_size];
     char dst[dp_size];
 
